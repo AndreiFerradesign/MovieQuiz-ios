@@ -8,9 +8,17 @@
 import Foundation
 import UIKit
 
-struct AlertPresenter {
+
+class AlertPresenter {
     
+    init(alertModel: AlertModel, viewController: UIViewController) {
+        self.alertModel = alertModel
+        self.viewController = viewController
+    }
+    
+    let alertModel: AlertModel
     weak var viewController: UIViewController?
+    
     func showAlert(quiz result: AlertModel) {
         
         let alert = UIAlertController(
@@ -20,11 +28,13 @@ struct AlertPresenter {
         
         let action = UIAlertAction(
             title: result.buttonText,
-            style: .default,
-            handler: result.completion)
-
+            style: .default)  {_ in
+            self.alertModel.completion()
+    }
+        guard let viewController = viewController else { return }
         alert.addAction(action)
-        viewController?.present(alert, animated: true, completion: nil)
+        viewController.present(alert, animated: true, completion: nil)
     }
 
 }
+
