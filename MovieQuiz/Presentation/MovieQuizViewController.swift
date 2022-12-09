@@ -13,13 +13,13 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         }
     }
     
-    @IBOutlet private weak var noButton: UIButton!
-    @IBOutlet private weak var yesButton: UIButton!
+    @IBOutlet private var noButton: UIButton!
+    @IBOutlet private var yesButton: UIButton!
     @IBOutlet private var imageView: UIImageView!
     @IBOutlet private var counterLabel: UILabel!
     @IBOutlet private var textLabel: UILabel!
 
-    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    @IBOutlet private var activityIndicator: UIActivityIndicatorView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,7 +28,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
         statisticService = StatisticServiceImplementation()
         questionFactory?.loadData()
-        showLoadingIndicator()
+        drawLoader(isShown: true)
         enableButtons()
     }
     
@@ -45,23 +45,19 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     func didLoadDataFromServer() {
-        hideLoadingIndicator() // скрываем индикатор загрузки
+        
+        drawLoader(isShown: false)
         questionFactory?.requestNextQuestion()
     }
     
-    private func showLoadingIndicator (){
-        activityIndicator.isHidden = false
-        activityIndicator.startAnimating()
+    private func drawLoader(isShown: Bool) {
+          activityIndicator.isHidden = !isShown
+          isShown ? activityIndicator.startAnimating() : activityIndicator.stopAnimating()
     }
-    
-    private func hideLoadingIndicator(){
-        activityIndicator.isHidden = true
-        activityIndicator.stopAnimating()
-    }
-    
+
     private func showNetworkError(message: String){
         
-        hideLoadingIndicator()
+        drawLoader(isShown: true)
         
         let networkAlertModel = AlertModel (
             title: "Ошибка",
@@ -111,13 +107,13 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         if isCorrect {
             correctAnswers += 1
         }
-        showLoadingIndicator()
+        drawLoader(isShown: true)
         disableButtons()
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                 self.hideAnswerBorder()
                 self.showNextQuestionOrResults()
-                self.hideLoadingIndicator()
+                self.drawLoader(isShown: false)
             }
         }
         

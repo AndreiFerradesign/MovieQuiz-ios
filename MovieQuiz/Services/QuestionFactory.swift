@@ -25,7 +25,7 @@ class QuestionFactory: QuestionFactoryProtocol {
     }
     func loadData() {
             moviesLoader.loadMovies { [weak self] result in
-                DispatchQueue.main.async { [weak self] in
+                DispatchQueue.main.async {
                     guard let self = self else { return }
                     switch result {
                     case .success(let mostPopularMovies):
@@ -68,10 +68,8 @@ class QuestionFactory: QuestionFactoryProtocol {
                                          text: text,
                                          correctAnswer: correctAnswer)
             
-            DispatchQueue.main.async { [weak self] in
-                guard let self = self else { return }
-                self.delegate?.didReceiveNextQuestion(question: question)
-            }
+            self.delegate?.didReceiveNextQuestion(question: question)
+        
         }
     }
 }
