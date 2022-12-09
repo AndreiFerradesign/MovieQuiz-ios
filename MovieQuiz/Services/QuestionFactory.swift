@@ -11,7 +11,7 @@ import UIKit
 class QuestionFactory: QuestionFactoryProtocol {
     
     private let moviesLoader: MoviesLoading
-    private var delegate: QuestionFactoryDelegate?
+    weak var delegate: QuestionFactoryDelegate?
     private var movies: [MostPopularMovie] = []
     
     init(moviesLoader: MoviesLoading, delegate: QuestionFactoryDelegate?) {
@@ -67,9 +67,10 @@ class QuestionFactory: QuestionFactoryProtocol {
             let question = QuizQuestion(image: imageData,
                                          text: text,
                                          correctAnswer: correctAnswer)
-            
-            self.delegate?.didReceiveNextQuestion(question: question)
-        
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                self.delegate?.didReceiveNextQuestion(question: question)
+            }
         }
     }
 }
