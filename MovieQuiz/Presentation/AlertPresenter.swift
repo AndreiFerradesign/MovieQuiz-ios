@@ -5,36 +5,27 @@
 //  Created by Andrei on 13.11.2022.
 //
 
-import Foundation
+
 import UIKit
 
 
 class AlertPresenter {
     
-    init(alertModel: AlertModel, viewController: UIViewController) {
-        self.alertModel = alertModel
-        self.viewController = viewController
-    }
-    
-    let alertModel: AlertModel
-    weak var viewController: UIViewController?
-    
-    func showAlert(quiz result: AlertModel) {
+    func showAlert(showController: UIViewController?, model: AlertModel) {
         
         let alert = UIAlertController(
-            title: result.title,
-            message: result.message,
+            title: model.title,
+            message: model.message,
             preferredStyle: .alert)
         
         let action = UIAlertAction(
-            title: result.buttonText,
-            style: .default)  {_ in
-            self.alertModel.completion()
+            title: model.buttonText,
+            style: .default)  { _ in
+            model.completion()
     }
-        guard let viewController = viewController else { return }
+        guard let viewController = showController else { return }
         alert.addAction(action)
         viewController.present(alert, animated: true, completion: nil)
     }
-
 }
 
