@@ -7,7 +7,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             return
         }
         currentQuestion = question
-        let viewModel = convert(model: question)
+        let viewModel = presenter.convert(model: question)
         DispatchQueue.main.async { [weak self] in
             self?.show(quiz: viewModel)
         }
@@ -32,13 +32,14 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         enableButtons()
     }
     
-    private var currentQuestionIndex: Int = 0
+    //private var currentQuestionIndex: Int = 0
+    //private let questionsAmount: Int = 10
     private var correctAnswers: Int = 0
-    private let questionsAmount: Int = 10
     private var currentQuestion: QuizQuestion?
     private var questionFactory: QuestionFactoryProtocol?
     private var alertPresenter: AlertPresenter?
     private var statisticService: StatisticService?
+    private let presenter = MovieQuizPresenter()
     
     func didFailToLoadData(with error: Error) {
         showNetworkError(message: error.localizedDescription) // возьмём в качестве сообщения описание ошибки
@@ -71,7 +72,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
 
     private func restartGame() {
-            currentQuestionIndex = 0
+            presenter.resetQuestionIndex()
             correctAnswers = 0
             questionFactory?.requestNextQuestion()
         }
@@ -90,13 +91,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             imageView.image = step.image
             counterLabel.text = step.questionNumber
             textLabel.text = step.question
-        }
-    
-    private func convert(model: QuizQuestion) -> QuizStepViewModel {
-            return QuizStepViewModel(
-                image: UIImage(data: model.image) ?? UIImage(), // распаковываем картинку
-                question: model.text, // берём текст вопроса
-                questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)") // высчитываем номер вопроса
         }
         
     private func showAnswerResult(isCorrect: Bool) {
@@ -124,11 +118,11 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
 
     private func showNextQuestionOrResults() {
         
-            if currentQuestionIndex == questionsAmount - 1 {
+            if presenter.isLastQuestion() {
                 
                 if let statisticService = statisticService {
                     
-                    statisticService.store(correct: correctAnswers, total: questionsAmount)
+                    statisticService.store(correct: correctAnswers, total: presenter.questionsAmount)
                     
                     let bestGame = statisticService.bestGame
                     let dateFormatter = DateFormatter()
@@ -149,7 +143,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
                     alertPresenter?.showAlert(showController: self, model: resultsAlertModel)
                 }
             } else {
-                currentQuestionIndex += 1
+                presenter.switchToNextQuestion()
                 questionFactory?.requestNextQuestion()
             }
             enableButtons()
