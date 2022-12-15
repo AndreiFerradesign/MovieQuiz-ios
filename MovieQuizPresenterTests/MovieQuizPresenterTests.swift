@@ -34,9 +34,7 @@ final class MovieQuizViewControllerProtocolMock: MovieQuizViewControllerProtocol
     func hideAnswerBorder() {
         
     }
-
 }
-
 
 class MovieQuizPresenterTest: XCTestCase {
     

@@ -20,6 +20,7 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
     override func viewDidLoad() {
         super.viewDidLoad()
         imageView.layer.masksToBounds = true
+        imageView.layer.borderWidth = 8
         drawLoader(isShown: true)
         enableButtons()
         
@@ -88,13 +89,11 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
     }
     
     func showAnswerBorder(isCorrect: Bool){
-        imageView.layer.borderWidth = 8
         imageView.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
     }
         
     func hideAnswerBorder() {
-            imageView.layer.borderWidth = 8
-            imageView.layer.borderColor =  UIColor.clear.cgColor
+        imageView.layer.borderColor =  UIColor.clear.cgColor
     }
 
 }

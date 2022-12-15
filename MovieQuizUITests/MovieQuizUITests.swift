@@ -28,32 +28,36 @@ final class MovieQuizUITests: XCTestCase {
     
     func testNoButton() {
         
-        let firstPoster = app.images["Poster"] // находим первоначальный постер
+        let myImageFirst = XCUIApplication().images["Poster"]
+        let firstPoster = myImageFirst.screenshot()
+    
+        app.buttons["No"].tap()
         
-        app.buttons["No"].tap() // находим кнопку `Да` и нажимаем её
-        
-        let secondPoster = app.images["Poster"] // ещё раз находим постер
+        let myImageSecond = XCUIApplication().images["Poster"]
+        let secondPoster = myImageSecond.screenshot()
         let indexLabel = app.staticTexts["Index"]
         
-        sleep(3)
+        sleep(2)
         
         XCTAssertTrue(indexLabel.label == "2/10")
-        XCTAssertFalse(firstPoster == secondPoster) // проверяем, что постеры разные
+        XCTAssertNotEqual(firstPoster.pngRepresentation, secondPoster.pngRepresentation)
     }
     
     func testYesButton() {
         
-        let firstPoster = app.images["Poster"] // находим первоначальный постер
+        let myImageFirst = XCUIApplication().images["Poster"]
+        let firstPoster = myImageFirst.screenshot()
+    
+        app.buttons["Yes"].tap()
         
-        app.buttons["Yes"].tap() // находим кнопку `Да` и нажимаем её
-        
-        let secondPoster = app.images["Poster"] // ещё раз находим постер
+        let myImageSecond = XCUIApplication().images["Poster"]
+        let secondPoster = myImageSecond.screenshot()
         let indexLabel = app.staticTexts["Index"]
         
-        sleep(3)
+        sleep(2)
         
         XCTAssertTrue(indexLabel.label == "2/10")
-        XCTAssertFalse(firstPoster == secondPoster) // проверяем, что постеры разные
+        XCTAssertNotEqual(firstPoster.pngRepresentation, secondPoster.pngRepresentation)
     }
     
     func testResultAlertShow() {
@@ -65,17 +69,36 @@ final class MovieQuizUITests: XCTestCase {
                 sleep(1)
             }
             
-            sleep(3)
+        sleep(2)
             
             let alert = app.alerts[expectedAlertTitle]
             XCTAssertTrue(app.alerts[expectedAlertTitle].exists)
             XCTAssertTrue(alert.label == expectedAlertTitle)
             XCTAssertTrue(alert.buttons.firstMatch.label == expectedButtonLabel)
         }
+    
+    func testAlertDismiss() {
+        
+        for _ in 1...10 {
+            app.buttons["Yes"].tap()
+            sleep(1)
+        }
+        
+        sleep(1)
+        
+        let alert = app.alerts["Этот раунд окончен!"]
+        alert.buttons.firstMatch.tap()
+        
+        sleep(2)
+        
+        let indexLabel = app.staticTexts["Index"]
+        
+        XCTAssertFalse(app.alerts["Этот раунд окончен!"].exists)
+        XCTAssertTrue(indexLabel.label == "1/10")
+    }
 
     func testLaunchPerformance() throws {
         if #available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 7.0, *) {
-            // This measures how long it takes to launch your application.
             measure(metrics: [XCTApplicationLaunchMetric()]) {
                 XCUIApplication().launch()
             }
