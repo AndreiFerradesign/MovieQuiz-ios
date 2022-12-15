@@ -6,7 +6,7 @@
 //
 
 import XCTest
-@testable import MovieQuiz // импортируем приложение для тестирования
+@testable import MovieQuiz 
 
 class MoviesLoaderTests: XCTestCase {
     
@@ -17,14 +17,14 @@ class MoviesLoaderTests: XCTestCase {
         let expectation = expectation(description: "Loading expectation")
         
         loader.loadMovies { result in
-            // Then
+    
             switch result {
-            case .success(_):
-                // сравниваем данные с тем, что мы предполагали
+            case .success(let movies):
+                XCTAssertEqual(movies.items.count, 2)
                 expectation.fulfill()
             case .failure(_):
-                // мы не ожидаем, что пришла ошибка; если она появится, надо будет провалить тест
-                XCTFail("Unexpected failure") // эта функция проваливает тест
+                
+                XCTFail("Unexpected failure")
             }
         }
        
